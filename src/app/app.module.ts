@@ -12,14 +12,13 @@ import { NotpagefoundComponent } from './pages/notpagefound/notpagefound.compone
 @NgModule({
   declarations: [
     AppComponent,
-    NotpagefoundComponent,
-    
+    NotpagefoundComponent,    
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     PagesModule,
-    AuthModule
+    AuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
