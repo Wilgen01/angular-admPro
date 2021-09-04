@@ -16,7 +16,7 @@ export class SettingsService {
     const url = `./assets/css/colors/${theme}.css`
     this.linkTheme?.setAttribute('href', url);
     localStorage.setItem('theme', url)
-    this.checkCurrentTheme
+    this.checkCurrentTheme()
    }
 
    checkCurrentTheme(){
