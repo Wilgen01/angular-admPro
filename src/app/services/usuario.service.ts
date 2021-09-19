@@ -6,6 +6,7 @@ import { LoginForm } from '../interfaces/login-form.interface';
 import { tap, map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Usuario } from '../models/usuario.model';
 declare var gapi: any; 
 
 const base_url = environment.base_url;
@@ -16,12 +17,21 @@ const base_url = environment.base_url;
 export class UsuarioService {
 
   public auth2 : any;
+  public usuario : Usuario = new Usuario('','')
 
   constructor(private http: HttpClient, 
               private router : Router, 
               private ngZone : NgZone) { 
                 
     this.googleInit();
+  }
+
+  get token(){
+    return localStorage.getItem('token') || '';
+  }
+
+  get uid(){
+    return this.usuario.uid || ''
   }
 
   
@@ -49,23 +59,47 @@ export class UsuarioService {
   }
 
   validarToken(){
-    const token = localStorage.getItem('token') || '';
 
     return this.http.get(`${base_url}/login/renew`,{
       headers: {
-        'x-token' : token
+        'x-token' : this.token
       }
     }).pipe(
-      tap((resp: any) =>{
+      map((resp: any) =>{
+        const {
+          nombre,
+          email,
+          img,
+          google,
+          rol,
+          uid,
+        } = resp.usuario
+        this.usuario = new Usuario(nombre, email, '', img, google, rol, uid)      
         localStorage.setItem('token', resp.token)
+        return true
       }),
-      map(resp=> true),
       catchError(err => of(false))
     )
   }
 
   crearUsuario(formData: RegisterForm){
-    return this.http.post(`${base_url}/usuarios`, formData)
+    return this.http.post(`${base_url}/usuarios`, formData).pipe(
+      tap((resp:any) =>{
+        localStorage.setItem('token', resp.token)
+      })
+    )
+  }
+
+  actualizarPerfil(data: {email:String, nombre: string, rol: string}){
+    data = {
+      ...data, 
+      rol: this.usuario.rol || ''
+    }
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
+        headers: {
+          'x-token' : this.token
+        }
+    })
   }
 
   login(formData: LoginForm){
