@@ -7,6 +7,8 @@ import { tap, map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Usuario } from '../models/usuario.model';
+import { CargarUsuarios } from '../interfaces/cargar-usuarios.interface';
+import Swal from 'sweetalert2';
 declare var gapi: any; 
 
 const base_url = environment.base_url;
@@ -32,6 +34,14 @@ export class UsuarioService {
 
   get uid(){
     return this.usuario.uid || ''
+  }
+
+  get headers(){
+    return {
+      headers: {
+        'x-token' : this.token
+      }
+    }
   }
 
   
@@ -95,11 +105,7 @@ export class UsuarioService {
       ...data, 
       rol: this.usuario.rol || ''
     }
-    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
-        headers: {
-          'x-token' : this.token
-        }
-    })
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, this.headers)
   }
 
   login(formData: LoginForm){
@@ -119,4 +125,28 @@ export class UsuarioService {
       })
     )
   }
+
+  cargarUsuarios(desde = 0){
+    return this.http.get<CargarUsuarios>(`${base_url}/usuarios?desde=${desde}`, this.headers)
+                    .pipe(
+                      map(resp =>{
+                        const usuarios = resp.usuarios.map(
+                          user => new Usuario(user.nombre, user.email, '', user.img, user.google, user.rol, user.uid)
+                        );
+                        return {
+                          total: resp.total,
+                          usuarios
+                        }
+                      })
+                    )
+  }
+
+  eliminarUsuario(usuario : Usuario){
+    return this.http.delete(`${base_url}/usuarios/${usuario.uid}`, this.headers)
+  }
+
+  guardarUsuario(data:Usuario){
+    return this.http.put(`${base_url}/usuarios/${data.uid}`, data, this.headers)
+  }
+
 }

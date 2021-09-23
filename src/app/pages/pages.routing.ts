@@ -10,6 +10,7 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PromesasComponent } from './promesas/promesas.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { UsuariosComponent } from './mantenimientos/usuarios/usuarios.component';
 
 
 
@@ -26,6 +27,10 @@ const routes: Routes = [
             { path: 'promesas', component: PromesasComponent, data: {titulo : 'promesas'}},
             { path: 'rxjs', component: RxjsComponent, data: {titulo : 'rxjs'} },
             { path: 'perfil', component: PerfilComponent, data: {titulo : 'perfil'} },
+
+            { path: 'usuarios', component: UsuariosComponent , data: {titulo : 'Usuarios'} },
+            { path: 'hospitales', component: PerfilComponent, data: {titulo : 'perfil'} },
+            { path: 'medicos', component: PerfilComponent, data: {titulo : 'perfil'} },
         ]
     },
 ];
